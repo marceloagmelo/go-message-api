@@ -139,12 +139,71 @@ func AtualizarMensagem(db db.Database, w http.ResponseWriter, r *http.Request) {
 				return
 			}
 		} else {
-			mensagem := fmt.Sprint("AtualizarMensagem(): Campos obrigatórios!")
+			mensagem := fmt.Sprint("Campos obrigatórios!")
 
 			if novaMensagem.ID <= 0 {
-				mensagem = fmt.Sprint("AtualizarMensagem(): ID da mensagem menor ou igual a zero!")
+				mensagem = fmt.Sprint("ID da mensagem menor ou igual a zero!")
 			} else if !utils.InBetween(novaMensagem.Status, 1, 2) {
-				mensagem = fmt.Sprint("AtualizarMensagem(): Status diferente de 1 e 2!")
+				mensagem = fmt.Sprint("Status diferente de 1 e 2!")
+			}
+			logger.Erro.Println(mensagem)
+
+			respondError(w, http.StatusLengthRequired, mensagem)
+			return
+		}
+
+		respondJSON(w, http.StatusOK, novaMensagem)
+	}
+}
+
+//ReenviarMensagem atualizar mensagem
+func ReenviarMensagem(db db.Database, w http.ResponseWriter, r *http.Request) {
+	var novaMensagem models.Mensagem
+
+	if r.Method == "PUT" {
+		reqBody, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			mensagem := fmt.Sprintf("%s: %s", "Erro ao atualizara mensagem", err)
+			logger.Erro.Println(mensagem)
+		}
+
+		json.Unmarshal(reqBody, &novaMensagem)
+		novaMensagem.Status = 1
+
+		if novaMensagem.ID > 0 && novaMensagem.Titulo != "" && novaMensagem.Texto != "" && utils.InBetween(novaMensagem.Status, 1, 2) {
+			var mensagemModel = db.Collection("mensagem")
+			var interf models.Metodos
+
+			interf = novaMensagem
+
+			err := interf.Atualizar(mensagemModel)
+			if err != nil {
+				mensagem := fmt.Sprintf("%s: %s", "Erro ao atualizar a mensagem", err)
+				respondError(w, http.StatusInternalServerError, mensagem)
+				return
+			}
+
+			conn, err := lib.ConectarRabbitMQ()
+			if err != nil {
+				return
+			}
+			defer conn.Close()
+
+			strID := fmt.Sprintf("%v", novaMensagem.ID)
+			err = lib.EnviarMensagemRabbitMQ(conn, strID)
+			if err != nil {
+				return
+			}
+
+			mensagem := fmt.Sprintf("Mensagem %s enviada para o rabbitmq", strID)
+			logger.Info.Println(mensagem)
+		} else {
+			mensagem := fmt.Sprint("Campos obrigatórios!")
+
+			if novaMensagem.ID <= 0 {
+				mensagem = fmt.Sprint("ID da mensagem menor ou igual a zero!")
+			} else if !utils.InBetween(novaMensagem.Status, 1, 2) {
+				mensagem = fmt.Sprint("Status diferente de 1 e 2!")
 			}
 			logger.Erro.Println(mensagem)
 
