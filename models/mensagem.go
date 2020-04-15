@@ -45,6 +45,9 @@ func (m Mensagem) Criar(mensagemModel db.Collection) (string, error) {
 		return strID, err
 	}
 
+	mensagem = fmt.Sprintf("Mensagem %s enviada para o rabbitmq", strID)
+	logger.Info.Println(mensagem)
+
 	return strID, nil
 }
 

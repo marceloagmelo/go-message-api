@@ -70,8 +70,5 @@ func EnviarMensagemRabbitMQ(conn *amqp.Connection, novoID string) error {
 		return err
 	}
 
-	mensagem := fmt.Sprintf("Mensagem %s enviada para o rabbitmq", body)
-	logger.Info.Println(mensagem)
-
 	return nil
 }
