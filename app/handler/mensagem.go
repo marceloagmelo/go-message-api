@@ -36,7 +36,6 @@ func Health(db db.Database, w http.ResponseWriter, r *http.Request) {
 	conn, err := lib.ConectarRabbitMQ()
 	if err != nil {
 		mensagem := fmt.Sprintf("%s: %s", "Erro ao conectar com o rabbitmq", err)
-		logger.Erro.Println(mensagem)
 		respondError(w, http.StatusInternalServerError, mensagem)
 		return
 	}
@@ -88,7 +87,6 @@ func EnviarMensagem(db db.Database, w http.ResponseWriter, r *http.Request) {
 			strID, err := interf.Criar(mensagemModel)
 			if err != nil {
 				mensagem := fmt.Sprintf("%s: %s", "Erro ao enviar a mensagem", err)
-				logger.Erro.Println(mensagem)
 				respondError(w, http.StatusInternalServerError, mensagem)
 				return
 			}
@@ -137,7 +135,6 @@ func AtualizarMensagem(db db.Database, w http.ResponseWriter, r *http.Request) {
 			err := interf.Atualizar(mensagemModel)
 			if err != nil {
 				mensagem := fmt.Sprintf("%s: %s", "Erro ao atualizar a mensagem", err)
-				logger.Erro.Println(mensagem)
 				respondError(w, http.StatusInternalServerError, mensagem)
 				return
 			}
