@@ -81,16 +81,5 @@ func (m Mensagem) Atualizar(mensagemModel db.Collection) error {
 	mensagem := fmt.Sprintf("Mensagem %s atualizada no banco de dados", strID)
 	logger.Info.Println(mensagem)
 
-	conn, err := lib.ConectarRabbitMQ()
-	if err != nil {
-		return err
-	}
-	defer conn.Close()
-
-	err = lib.EnviarMensagemRabbitMQ(conn, strID)
-	if err != nil {
-		return err
-	}
-
 	return nil
 }

@@ -10,7 +10,7 @@ docker rm -f rabbitmq
 
 # Teste de conexao
 echo "Finalizando o go-message-api..."
-docker rm -f marceloagmelo/go-message-api
+docker rm -f go-message-api
 
 # Remover rede
 echo "Removendo a rede message-net..."

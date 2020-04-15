@@ -29,7 +29,7 @@ rabbitmq:3.6.16-management
 # Rabbitmq message api
 echo "Subindo o go-message-api..."
 docker run -d --name go-message-api --network message-net  \
--p 8080:8080 \
+-p 8181:8080 \
 -e MYSQL_USER=${MYSQL_USER} \
 -e MYSQL_PASSWORD=${MYSQL_PASSWORD} \
 -e MYSQL_HOSTNAME=${MYSQL_HOSTNAME} \
