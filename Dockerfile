@@ -28,6 +28,7 @@ WORKDIR $APP_HOME
 
 COPY --from=builder $APP_BUILDER/go-message-api $APP_HOME/go-message-api
 COPY docker-container-start.sh $APP_HOME
+COPY Dockerfile $APP_HOME/Dockerfile
 
 RUN apk add --no-cache ca-certificates tzdata bash && \
     addgroup -g $GID -S $USER && \

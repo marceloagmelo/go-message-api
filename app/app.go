@@ -52,8 +52,9 @@ func (a *App) Initialize(config *config.Config) {
 func (a *App) setRouters() {
 
 	a.Get("/health", a.handleDBRequest(handler.Health))
-	a.Post("/mensagem/criar", a.handleDBRequest(handler.EnviarMensagem))
+	a.Post("/mensagem/enviar", a.handleDBRequest(handler.EnviarMensagem))
 	a.Put("/mensagem/atualizar", a.handleDBRequest(handler.AtualizarMensagem))
+	a.Put("/mensagem/reenviar", a.handleDBRequest(handler.ReenviarMensagem))
 	a.Get("/mensagens", a.handleDBRequest(handler.TodasMensagens))
 	a.Get("/mensagem/{id}", a.handleDBRequest(handler.UmaMensagem))
 	a.Get("/mensagem/status/{id}", a.handleDBRequest(handler.StatusMensagens))
