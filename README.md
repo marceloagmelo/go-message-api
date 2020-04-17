@@ -15,8 +15,12 @@ Este é um serviço de envio de mensagem para o **RabbitMQ** e gravação no **M
 
 # Instalação
 
-go get -v github.com/marceloagmelo/go-message-api
+```
 cd go-message-api
+```
+```
+cd go-message-api
+```
 
 ## Build da Aplicação
 
@@ -55,6 +59,11 @@ http://localhost:8181/go-message/api/v1/health
 ## Finalizar a Aplicação Message API
 ```
 ./go-message-api-stop.sh
+```
+
+## Finalizar a Todas as Aplicações
+```
+./go-message-api-stop-all.sh
 ```
 
 # Serviços
