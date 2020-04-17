@@ -102,7 +102,7 @@ func EnviarMensagem(db db.Database, w http.ResponseWriter, r *http.Request) {
 			}
 			novaMensagem.ID = id
 		} else {
-			mensagem := fmt.Sprint("Titulo ou Descrição obrigatórios!")
+			mensagem := fmt.Sprint("Titulo ou Texto obrigatórios!")
 			logger.Erro.Println(mensagem)
 
 			respondError(w, http.StatusLengthRequired, mensagem)
