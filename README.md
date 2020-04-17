@@ -16,7 +16,7 @@ Este é um serviço de envio de mensagem para o **RabbitMQ** e gravação no **M
 # Instalação
 
 ```
-cd go-message-api
+go get -v github.com/marceloagmelo/go-message-api
 ```
 ```
 cd go-message-api
