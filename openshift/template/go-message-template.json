@@ -669,7 +669,7 @@
             "name": "MYSQL_SECRET",
             "displayName": "Secret do mysql",
             "description": "Secret do mysql",
-            "value": "mysqldb",
+            "value": "secret-db-gomessagedb",
             "required": true
         },
         {
@@ -683,7 +683,7 @@
             "name": "MYSQL_DATABASE",
             "displayName": "Nome do banco de dados",
             "description": "Nome do banco de dados",
-            "value": "mysqldbsample",
+            "value": "gomessagedb",
             "required": true
         },
         {
