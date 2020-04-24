@@ -11,9 +11,9 @@ echo "Finalizando o rabbitmq..."
 docker rm -f $RABBITMQ_HOSTNAME
 
 # Message API
-echo "Finalizando o go-message-api..."
-docker rm -f go-message-api
+echo "Finalizando o ${APP_NAME}..."
+docker rm -f ${APP_NAME}
 
 # Remover rede
-echo "Removendo a rede message-net..."
+echo "Removendo a rede ${DOCKER_NETWORK}..."
 docker network rm $DOCKER_NETWORK

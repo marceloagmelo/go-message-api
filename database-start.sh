@@ -3,7 +3,7 @@
 # Tabela
 echo "Criando a tabela mensagem..."
 mysql -h localhost -u root -p -D ${MYSQL_DATABASE} << EOF
-use ${MYSQL_DATABASE};
+use gomessagedb;
 CREATE TABLE mensagem (
 id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 titulo VARCHAR(100), texto VARCHAR(255),

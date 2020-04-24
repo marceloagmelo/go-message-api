@@ -25,8 +25,8 @@ func Health(db db.Database, w http.ResponseWriter, r *http.Request) {
 	dataHoraFormatada := variaveis.DataHoraAtual.Format(variaveis.DataFormat)
 
 	var mensagemModel = db.Collection("mensagem")
-	var mensagens []models.Mensagem
-	if err := mensagemModel.Find().All(&mensagens); err != nil {
+	_, err := models.TodasMensagens(mensagemModel)
+	if err != nil {
 		mensagem := fmt.Sprintf("%s: %s", "Erro ao conectar com o banco de dados", err)
 		logger.Erro.Println(mensagem)
 		respondError(w, http.StatusInternalServerError, mensagem)
@@ -44,17 +44,15 @@ func Health(db db.Database, w http.ResponseWriter, r *http.Request) {
 	retorno := retorno{}
 	retorno.Status = fmt.Sprintf("OK [%v] !", dataHoraFormatada)
 
-	//logger.Info.Println("Serviço OK!")
-
 	respondJSON(w, http.StatusOK, retorno)
 }
 
-//TodasMensagens listagem de todas as mensagens
+//TodasMensagens listagem de todoos os mensagens
 func TodasMensagens(db db.Database, w http.ResponseWriter, r *http.Request) {
-	var mensagens []models.Mensagem
 	var mensagemModel = db.Collection("mensagem")
 
-	if err := mensagemModel.Find().All(&mensagens); err != nil {
+	mensagens, err := models.TodasMensagens(mensagemModel)
+	if err != nil {
 		mensagem := fmt.Sprintf("%s: %s", "Erro ao listar todas as mensagens", err)
 		logger.Erro.Println(mensagem)
 		respondError(w, http.StatusInternalServerError, mensagem)
@@ -64,8 +62,8 @@ func TodasMensagens(db db.Database, w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, mensagens)
 }
 
-//EnviarMensagem enviar mensagem
-func EnviarMensagem(db db.Database, w http.ResponseWriter, r *http.Request) {
+//Enviar mensagem
+func Enviar(db db.Database, w http.ResponseWriter, r *http.Request) {
 	var novaMensagem models.Mensagem
 
 	if r.Method == "POST" {
@@ -76,6 +74,7 @@ func EnviarMensagem(db db.Database, w http.ResponseWriter, r *http.Request) {
 		}
 
 		json.Unmarshal(reqBody, &novaMensagem)
+		novaMensagem.Status = 1
 
 		if novaMensagem.Titulo != "" && novaMensagem.Texto != "" {
 			var mensagemModel = db.Collection("mensagem")
@@ -113,8 +112,8 @@ func EnviarMensagem(db db.Database, w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//AtualizarMensagem atualizar mensagem
-func AtualizarMensagem(db db.Database, w http.ResponseWriter, r *http.Request) {
+//Atualizar atualizar mensagem
+func Atualizar(db db.Database, w http.ResponseWriter, r *http.Request) {
 	var novaMensagem models.Mensagem
 
 	if r.Method == "PUT" {
@@ -156,8 +155,8 @@ func AtualizarMensagem(db db.Database, w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//ReenviarMensagem atualizar mensagem
-func ReenviarMensagem(db db.Database, w http.ResponseWriter, r *http.Request) {
+//Reenviar atualizar mensagem
+func Reenviar(db db.Database, w http.ResponseWriter, r *http.Request) {
 	var novaMensagem models.Mensagem
 
 	if r.Method == "PUT" {
@@ -215,8 +214,8 @@ func ReenviarMensagem(db db.Database, w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//ApagarMensagem apagar uma mensagem
-func ApagarMensagem(db db.Database, w http.ResponseWriter, r *http.Request) {
+//Apagar apagar uma mensagem
+func Apagar(db db.Database, w http.ResponseWriter, r *http.Request) {
 	if r.Method == "DELETE" {
 		vars := mux.Vars(r)
 		id, err := strconv.Atoi(vars["id"])
@@ -231,27 +230,10 @@ func ApagarMensagem(db db.Database, w http.ResponseWriter, r *http.Request) {
 		if id > 0 {
 			var mensagemModel = db.Collection("mensagem")
 
-			resultado := mensagemModel.Find("id=?", id)
-			if count, err := resultado.Count(); count < 1 {
-				mensagem := ""
-				if err != nil {
-					mensagem = fmt.Sprintf("%s: %s", "Erro ao encontrar mensagem", err)
-				} else {
-					mensagem = fmt.Sprintf("Mensagem [%v] não encontrada!", id)
-				}
-
-				logger.Erro.Println(mensagem)
-
-				respondError(w, http.StatusNotFound, mensagem)
-				return
-			}
-
-			if err := resultado.Delete(); err != nil {
-				mensagem := fmt.Sprintf("%s: %s", "Erro ao apagar mensagem", err)
-
-				logger.Erro.Println(mensagem)
-
-				respondError(w, http.StatusNotFound, mensagem)
+			err := models.Apagar(mensagemModel, id)
+			if err != nil {
+				mensagem := fmt.Sprintf("%s: %s", "Erro ao apagar o mensagem", err)
+				respondError(w, http.StatusInternalServerError, mensagem)
 				return
 			}
 		} else {
@@ -271,10 +253,10 @@ func ApagarMensagem(db db.Database, w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//StatusMensagens lista de mensagens por status
-func StatusMensagens(db db.Database, w http.ResponseWriter, r *http.Request) {
+//ListarStatus lista de mensagens por status
+func ListarStatus(db db.Database, w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+	status, err := strconv.Atoi(vars["status"])
 	if err != nil {
 		mensagem := fmt.Sprintf("%s: %s", "Erro status inválido", err)
 		logger.Erro.Println(mensagem)
@@ -283,32 +265,30 @@ func StatusMensagens(db db.Database, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var mensagens []models.Mensagem
-	var mensagemModel = db.Collection("mensagem")
-
-	resultado := mensagemModel.Find("status", id)
-	if count, err := resultado.Count(); count < 1 {
-		mensagem := ""
-		if err != nil {
-			mensagem = fmt.Sprintf("%s: %s", "Erro ao encontrar mensagens", err)
-		} else {
-			mensagem = fmt.Sprintf("Mensagens com status [%v] não encontradas!", id)
+	if status > 0 {
+		if !utils.InBetween(status, 1, 2) {
+			mensagem := fmt.Sprint("Status diferente de 1 e 2!")
+			respondError(w, http.StatusInternalServerError, mensagem)
+			return
 		}
 
+		var usuarioModel = db.Collection("mensagem")
+
+		mensagens, err := models.ListarStatus(usuarioModel, status)
+		if err != nil {
+			mensagem := fmt.Sprintf("%s: %s", "Erro ao listar status de mensagens", err)
+			respondError(w, http.StatusInternalServerError, mensagem)
+			return
+		}
+		respondJSON(w, http.StatusOK, mensagens)
+	} else {
+		mensagem := fmt.Sprint("Status do mensagem menor ou igual a zero!")
 		logger.Erro.Println(mensagem)
 
-		respondError(w, http.StatusNotFound, mensagem)
+		respondError(w, http.StatusLengthRequired, mensagem)
 		return
-	}
 
-	if err := resultado.All(&mensagens); err != nil {
-		mensagem := fmt.Sprintf("%s: %s", "Erro ao listar todas as mensagens", err)
-		logger.Erro.Println(mensagem)
-		respondError(w, http.StatusInternalServerError, mensagem)
-		return
 	}
-
-	respondJSON(w, http.StatusOK, mensagens)
 }
 
 //UmaMensagem recuperar mensagem
@@ -323,37 +303,24 @@ func UmaMensagem(db db.Database, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var mensagem models.Mensagem
-	var mensagemModel = db.Collection("mensagem")
+	if id > 0 {
+		var mensagemModel = db.Collection("mensagem")
 
-	resultado := mensagemModel.Find("id=?", id)
-	if count, err := resultado.Count(); count < 1 {
-		mensagem := ""
+		mensagem, err := models.UmaMensagem(mensagemModel, id)
 		if err != nil {
-			mensagem = fmt.Sprintf("%s: %s", "Erro ao encontrar mensagem", err)
-		} else {
-			mensagem = fmt.Sprintf("Mensagem [%v] não encontrada!", id)
+			msg := fmt.Sprintf("%s: %s", "Erro ao recuperar mensagem", err)
+			respondError(w, http.StatusInternalServerError, msg)
+			return
 		}
+		msg := fmt.Sprintf("Mensagem [%v] recuperado no banco de dados", id)
+		logger.Info.Println(msg)
 
-		logger.Erro.Println(mensagem)
+		respondJSON(w, http.StatusOK, mensagem)
+	} else {
+		msg := fmt.Sprint("ID do mensagem menor ou igual a zero!")
+		logger.Erro.Println(msg)
 
-		respondError(w, http.StatusNotFound, mensagem)
+		respondError(w, http.StatusLengthRequired, msg)
 		return
 	}
-
-	if err := resultado.One(&mensagem); err != nil {
-		mensagem := ""
-		if err != nil {
-			mensagem = fmt.Sprintf("%s: %s", "Erro ao encontrar mensagem", err)
-		} else {
-			mensagem = fmt.Sprintf("Mensagem [%v] não encontrada!", id)
-		}
-
-		logger.Erro.Println(mensagem)
-
-		respondError(w, http.StatusNotFound, mensagem)
-		return
-	}
-
-	respondJSON(w, http.StatusOK, mensagem)
 }

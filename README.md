@@ -25,12 +25,12 @@ cd go-message-api
 ## Build da Aplicação
 
 ```
-./go-message-api-image-build.sh
+./image-build.sh
 ```
 
 ## Iniciar as Aplicações de Dependências
 ```
-./go-message-api-dependecy.sh
+./go-dependecy-start.sh
 ```
 
 ## Preparar o MySQL
@@ -48,22 +48,22 @@ status INTEGER,
 PRIMARY KEY (id)
 );
 
-## Iniciar a Aplicação Message API
+## Iniciar a Aplicação
 ```
-./go-message-api-start.sh
+./start.sh
 ```
 ```
 http://localhost:8181/go-message/api/v1/health
 ```
 
-## Finalizar a Aplicação Message API
+## Finalizar a Aplicação
 ```
-./go-message-api-stop.sh
+./api-stop.sh
 ```
 
 ## Finalizar a Todas as Aplicações
 ```
-./go-message-api-stop-all.sh
+./stop-all.sh
 ```
 
 # Serviços

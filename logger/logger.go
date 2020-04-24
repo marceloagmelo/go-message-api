@@ -19,7 +19,7 @@ func (w writer) Write(b []byte) (n int, err error) {
 }
 
 //Info log info
-var Info = log.New(&writer{os.Stdout, "2006/01/02 15:04:05 "}, " [info] ", 0)
+var Info = log.New(&writer{os.Stdout, variaveis.DataFormat}, " [info] ", 0)
 
 //Erro log erro
-var Erro = log.New(&writer{os.Stdout, "2006/01/02 15:04:05 "}, " [error] ", log.Llongfile)
+var Erro = log.New(&writer{os.Stdout, variaveis.DataFormat}, " [error] ", log.Llongfile)

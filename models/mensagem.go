@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/marceloagmelo/go-message-api/lib"
@@ -85,4 +86,111 @@ func (m Mensagem) Atualizar(mensagemModel db.Collection) error {
 	logger.Info.Println(mensagem)
 
 	return nil
+}
+
+//TodasMensagens listar todos os mensagens
+func TodasMensagens(usuarioModel db.Collection) ([]Mensagem, error) {
+
+	var mensagens []Mensagem
+
+	if err := usuarioModel.Find().All(&mensagens); err != nil {
+		mensagem := fmt.Sprintf("%s: %s", "Erro ao listar todos os mensagens", err)
+		logger.Erro.Println(mensagem)
+		return mensagens, err
+	}
+
+	return mensagens, nil
+}
+
+//Apagar um mensagem no banco de dados
+func Apagar(mensagemModel db.Collection, id int) error {
+
+	resultado := mensagemModel.Find("id=?", id)
+	if count, err := resultado.Count(); count < 1 {
+		mensagem := ""
+		if err != nil {
+			mensagem = fmt.Sprintf("%s: %s", "Erro ao recuperar mensagem", err)
+		}
+		if count > 0 {
+		} else {
+			mensagem = fmt.Sprintf("Mensagem [%v] não encontrada!", id)
+			err = errors.New(mensagem)
+		}
+
+		if mensagem != "" {
+			logger.Erro.Println(mensagem)
+			return err
+		}
+	}
+	if err := resultado.Delete(); err != nil {
+		mensagem := fmt.Sprintf("%s: %s", "Erro ao apagar mensagem", err)
+		logger.Erro.Println(mensagem)
+		return err
+	}
+
+	return nil
+}
+
+//ListarStatus listar mensagens por status
+func ListarStatus(mensagemModel db.Collection, status int) ([]Mensagem, error) {
+
+	var mensagens []Mensagem
+
+	resultado := mensagemModel.Find("status", status)
+	if count, err := resultado.Count(); count < 1 {
+		mensagem := ""
+		if err != nil {
+			mensagem = fmt.Sprintf("%s: %s", "Erro ao listar status de mensagens", err)
+		} else {
+			mensagem = fmt.Sprintf("Mensagens com status [%v] não encontrados!", status)
+			err = errors.New(mensagem)
+		}
+
+		if mensagem != "" {
+			logger.Erro.Println(mensagem)
+			return mensagens, err
+		}
+	}
+
+	if err := resultado.All(&mensagens); err != nil {
+		mensagem := fmt.Sprintf("%s: %s", "Erro ao listar status de mensagens", err)
+		logger.Erro.Println(mensagem)
+	}
+
+	return mensagens, nil
+}
+
+//UmaMensagem recuperar um mensagem no banco de dados
+func UmaMensagem(mensagemModel db.Collection, id int) (Mensagem, error) {
+
+	var mensagem Mensagem
+
+	resultado := mensagemModel.Find("id=?", id)
+	if count, err := resultado.Count(); count < 1 {
+		msg := ""
+		if err != nil {
+			msg = fmt.Sprintf("%s: %s", "Erro ao recuperar mensagem", err)
+		} else {
+			msg = fmt.Sprintf("Mensagem [%v] não encontrada!", id)
+			err = errors.New(msg)
+		}
+
+		if msg != "" {
+			logger.Erro.Println(msg)
+			return mensagem, err
+		}
+	}
+	if err := resultado.One(&mensagem); err != nil {
+		msg := ""
+		if err != nil {
+			msg = fmt.Sprintf("%s: %s", "Erro ao recuperar mensagem", err)
+		} else {
+			msg = fmt.Sprintf("Mensagem [%v] não encontrado!", id)
+		}
+
+		logger.Erro.Println(msg)
+		return mensagem, err
+	}
+
+	return mensagem, nil
 }

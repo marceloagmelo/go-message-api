@@ -18,4 +18,5 @@ export RABBITMQ_VHOST="/"
 
 export DOCKER_NETWORK="message-net"
 export DOCKER_REGISTRY="marceloagmelo"
+export APP_NAME="go-message-api"
 
