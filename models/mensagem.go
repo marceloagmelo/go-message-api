@@ -24,7 +24,7 @@ type Metodos interface {
 }
 
 //Criar uma mensagem no banco de dados
-func (m Mensagem) Criar(mensagemModel db.Collection) (string, error) {
+func (m *Mensagem) Criar(mensagemModel db.Collection) (string, error) {
 	novoID, err := mensagemModel.Insert(m)
 	if err != nil {
 		mensagem := fmt.Sprintf("%s: %s", "Gravando a mensagem no banco de dados", err)
@@ -53,7 +53,7 @@ func (m Mensagem) Criar(mensagemModel db.Collection) (string, error) {
 }
 
 //Atualizar uma mensagem no banco de dados
-func (m Mensagem) Atualizar(mensagemModel db.Collection) error {
+func (m *Mensagem) Atualizar(mensagemModel db.Collection) error {
 	var novaMensagem = Mensagem{
 		ID:     m.ID,
 		Titulo: m.Titulo,

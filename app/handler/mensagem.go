@@ -74,13 +74,14 @@ func Enviar(db db.Database, w http.ResponseWriter, r *http.Request) {
 		}
 
 		json.Unmarshal(reqBody, &novaMensagem)
+
 		novaMensagem.Status = 1
 
 		if novaMensagem.Titulo != "" && novaMensagem.Texto != "" {
 			var mensagemModel = db.Collection("mensagem")
 			var interf models.Metodos
 
-			interf = novaMensagem
+			interf = &novaMensagem
 
 			//err := interf.Criar(mensagemModel)
 			strID, err := interf.Criar(mensagemModel)
@@ -129,7 +130,7 @@ func Atualizar(db db.Database, w http.ResponseWriter, r *http.Request) {
 			var mensagemModel = db.Collection("mensagem")
 			var interf models.Metodos
 
-			interf = novaMensagem
+			interf = &novaMensagem
 
 			err := interf.Atualizar(mensagemModel)
 			if err != nil {
@@ -173,7 +174,7 @@ func Reenviar(db db.Database, w http.ResponseWriter, r *http.Request) {
 			var mensagemModel = db.Collection("mensagem")
 			var interf models.Metodos
 
-			interf = novaMensagem
+			interf = &novaMensagem
 
 			err := interf.Atualizar(mensagemModel)
 			if err != nil {

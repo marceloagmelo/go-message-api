@@ -75,11 +75,25 @@ Lista dos serviços disponíveis:
 ### Enviar Mensagem
 ```
 curl -v -d '{"id":0, "titulo":"titulo 02", "texto":"menagem 02", "status":1}' -H "Content-Type: application/json" -X POST http://localhost:8181/go-message/api/v1/mensagem/enviar
+
+JSON:
+{
+	"titulo": "Mensagem 01",
+	"texto": "Mensagem 01"
+}
 ```
 
 ### Atualizar Mensagem
 ```
 curl -v -d '{"id":1, "titulo":"titulo 02", "texto":"menagem 02", "status":1}' -H "Content-Type: application/json" -X PUT http://localhost:8181/go-message/api/v1/mensagem/atualizar
+
+JSON:
+{
+	"id": 1,
+	"titulo": "Mensagem 01",
+	"texto": "Teste Mensagem 01",
+	"status": 1
+}
 ```
 
 ### Reenviar Mensagem

@@ -2,7 +2,7 @@
 
 # Tabela
 echo "Criando a tabela mensagem..."
-mysql -h localhost -u root -p -D ${MYSQL_DATABASE} << EOF
+mysql -h localhost -u root -p -D gomessagedb << EOF
 use gomessagedb;
 CREATE TABLE mensagem (
 id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
