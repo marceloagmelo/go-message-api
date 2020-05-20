@@ -1,8 +1,10 @@
 package models
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
 
 	"github.com/marceloagmelo/go-message-api/lib"
 	"github.com/marceloagmelo/go-message-api/logger"
@@ -35,13 +37,28 @@ func (m *Mensagem) Criar(mensagemModel db.Collection) (string, error) {
 	mensagem := fmt.Sprintf("Mensagem %s adicionada no banco de dados", strID)
 	logger.Info.Println(mensagem)
 
+	id, err := strconv.Atoi(strID)
+	if err != nil {
+		mensagem := fmt.Sprintf("%s: %s", "Convertendo o ID para integer", err)
+		logger.Erro.Println(mensagem)
+		return "", err
+	}
+	m.ID = id
+
 	conn, err := lib.ConectarRabbitMQ()
 	if err != nil {
 		return "", err
 	}
 	defer conn.Close()
 
-	err = lib.EnviarMensagemRabbitMQ(conn, strID)
+	conteudoEnviar, err := json.Marshal(m)
+	if err != nil {
+		mensagemErro := fmt.Sprintf("%s: %s", "Erro ao gerar o objeto com o JSON com os dados de envio", err.Error())
+		logger.Erro.Println(mensagemErro)
+		return "", err
+	}
+
+	err = lib.EnviarMensagemRabbitMQ(conn, conteudoEnviar)
 	if err != nil {
 		return strID, err
 	}

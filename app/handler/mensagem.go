@@ -189,13 +189,19 @@ func Reenviar(db db.Database, w http.ResponseWriter, r *http.Request) {
 			}
 			defer conn.Close()
 
-			strID := fmt.Sprintf("%v", novaMensagem.ID)
-			err = lib.EnviarMensagemRabbitMQ(conn, strID)
+			conteudoEnviar, err := json.Marshal(novaMensagem)
+			if err != nil {
+				mensagemErro := fmt.Sprintf("%s: %s", "Erro ao gerar o objeto com o JSON com os dados de envio", err.Error())
+				logger.Erro.Println(mensagemErro)
+				return
+			}
+
+			err = lib.EnviarMensagemRabbitMQ(conn, conteudoEnviar)
 			if err != nil {
 				return
 			}
 
-			mensagem := fmt.Sprintf("Mensagem %s enviada para o rabbitmq", strID)
+			mensagem := fmt.Sprintf("Mensagem %v enviada para o rabbitmq", novaMensagem.ID)
 			logger.Info.Println(mensagem)
 		} else {
 			mensagem := fmt.Sprint("Campos obrigatórios!")

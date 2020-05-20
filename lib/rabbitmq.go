@@ -28,7 +28,7 @@ func ConectarRabbitMQ() (*amqp.Connection, error) {
 }
 
 //EnviarMensagemRabbitMQ no rabbitmq
-func EnviarMensagemRabbitMQ(conn *amqp.Connection, novoID string) error {
+func EnviarMensagemRabbitMQ(conn *amqp.Connection, conteudoEnviar []byte) error {
 
 	// Abrir o canal
 	ch, err := conn.Channel()
@@ -49,20 +49,20 @@ func EnviarMensagemRabbitMQ(conn *amqp.Connection, novoID string) error {
 		nil,   // arguments
 	)
 	if err != nil {
-		mensagem := fmt.Sprintf("%s: %s", "Declarando fila", err)
-		logger.Erro.Println(mensagem)
+		mensagemErro := fmt.Sprintf("%s: %s", "Declarando fila", err)
+		logger.Erro.Println(mensagemErro)
 		return err
 	}
 
-	body := novoID
+	//body := bytes.NewBuffer(conteudoEnviar)
 	err = ch.Publish(
 		"",     // exchange
 		q.Name, // routing key
 		false,  // mandatory
 		false,  // immediate
 		amqp.Publishing{
-			ContentType: "text/plain",
-			Body:        []byte(body),
+			ContentType: "application/json",
+			Body:        conteudoEnviar,
 		})
 	if err != nil {
 		mensagem := fmt.Sprintf("%s: %s", "Publicando mensagem", err)
