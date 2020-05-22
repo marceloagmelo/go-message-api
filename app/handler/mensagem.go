@@ -79,12 +79,9 @@ func Enviar(db db.Database, w http.ResponseWriter, r *http.Request) {
 
 		if novaMensagem.Titulo != "" && novaMensagem.Texto != "" {
 			var mensagemModel = db.Collection("mensagem")
-			var interf models.Metodos
-
-			interf = &novaMensagem
 
 			//err := interf.Criar(mensagemModel)
-			strID, err := interf.Criar(mensagemModel)
+			strID, err := novaMensagem.Criar(mensagemModel)
 			if err != nil {
 				mensagem := fmt.Sprintf("%s: %s", "Erro ao enviar a mensagem", err)
 				respondError(w, http.StatusInternalServerError, mensagem)
@@ -128,11 +125,8 @@ func Atualizar(db db.Database, w http.ResponseWriter, r *http.Request) {
 
 		if novaMensagem.ID > 0 && novaMensagem.Titulo != "" && novaMensagem.Texto != "" && utils.InBetween(novaMensagem.Status, 1, 2) {
 			var mensagemModel = db.Collection("mensagem")
-			var interf models.Metodos
 
-			interf = &novaMensagem
-
-			err := interf.Atualizar(mensagemModel)
+			err := novaMensagem.Atualizar(mensagemModel)
 			if err != nil {
 				mensagem := fmt.Sprintf("%s: %s", "Erro ao atualizar a mensagem", err)
 				respondError(w, http.StatusInternalServerError, mensagem)
@@ -172,11 +166,8 @@ func Reenviar(db db.Database, w http.ResponseWriter, r *http.Request) {
 
 		if novaMensagem.ID > 0 && novaMensagem.Titulo != "" && novaMensagem.Texto != "" && utils.InBetween(novaMensagem.Status, 1, 2) {
 			var mensagemModel = db.Collection("mensagem")
-			var interf models.Metodos
 
-			interf = &novaMensagem
-
-			err := interf.Atualizar(mensagemModel)
+			err := novaMensagem.Atualizar(mensagemModel)
 			if err != nil {
 				mensagem := fmt.Sprintf("%s: %s", "Erro ao atualizar a mensagem", err)
 				respondError(w, http.StatusInternalServerError, mensagem)

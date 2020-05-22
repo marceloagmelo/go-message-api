@@ -19,12 +19,6 @@ type Mensagem struct {
 	Status int    `db:"status" json:"status"`
 }
 
-// Metodos interface
-type Metodos interface {
-	Criar(mensagemModel db.Collection) (string, error)
-	Atualizar(mensagemModel db.Collection) error
-}
-
 //Criar uma mensagem no banco de dados
 func (m *Mensagem) Criar(mensagemModel db.Collection) (string, error) {
 	novoID, err := mensagemModel.Insert(m)
